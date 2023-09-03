@@ -33,11 +33,17 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Boolean> isInStock(@RequestParam(name = "productId") List<Long> productIds) {
-        log.info("strada");
         return ResponseEntity.ok(productService.isInStock(productIds));
     }
-//    @DeleteMapping("/{id")
-//    public ResponseEntity<Void> deleteProduct(@PathVariable Long id)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@Valid @PathVariable Long id) {
+        if (productService.deleteProductIfExists(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            log.warn("Product with id {} not found for deletion", id);
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
 

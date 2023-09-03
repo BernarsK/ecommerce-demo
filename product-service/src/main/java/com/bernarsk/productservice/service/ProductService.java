@@ -33,6 +33,7 @@ public class ProductService {
             Optional<Product> product = productRepository.findById(v);
             if (product.isPresent()) {
                 Integer quantity = product.get().getQuantity();
+                // change later to check for client request quantity to match actual quantity
                 if (quantity > 0) {
                     log.info("Product is in stock!");
                     continue;

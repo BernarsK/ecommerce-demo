@@ -20,23 +20,21 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
-    public void createOrder(OrderDAO orderDAO) {
+    public Boolean createOrder(OrderDAO orderDAO) {
         // collect all product IDs
         List<Integer> productIDs = orderDAO.getOrderDetailsList()
                 .stream()
                 .map(OrderDetailsDAO::getProductId)
                 .toList();
-        log.info("strada1");
         // check if product is in stock
-        Boolean result = webClient.get()
-                .uri("http://localhost:8081/api/products",
+        Boolean result = webClientBuilder.build().get()
+                .uri("http://product-service/api/products",
                         uriBuilder -> uriBuilder.queryParam("productId", productIDs).build())
                 .retrieve()
                 .bodyToMono(Boolean.class)
                 .block();
-        log.info(result);
         if (result) {
             Order orderEntity = modelMapper.map(orderDAO, Order.class);
 
@@ -47,10 +45,11 @@ public class OrderService {
                 orderDetailsEntities.add(orderDetailsEntity);
             }
             orderEntity.setOrderDetailsList(orderDetailsEntities);
-
             orderRepository.save(orderEntity);
+            return true;
         } else {
             log.info("One of the products is not in stock!");
+            return false;
         }
     }
 }
