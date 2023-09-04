@@ -1,6 +1,6 @@
 package com.bernarsk.productservice.service;
 
-import com.bernarsk.productservice.dao.ProductDAO;
+import com.bernarsk.productservice.dto.ProductDTO;
 import com.bernarsk.productservice.model.Product;
 import com.bernarsk.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +23,8 @@ public class ProductService {
 
     }
 
-    public Product createProduct(ProductDAO productDAO) {
-        Product productEntity = modelMapper.map(productDAO, Product.class);
+    public Product createProduct(ProductDTO productDTO) {
+        Product productEntity = modelMapper.map(productDTO, Product.class);
         return productRepository.save(productEntity);
     }
 

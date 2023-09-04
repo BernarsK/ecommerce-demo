@@ -1,6 +1,6 @@
 package com.bernarsk.productservice.controller;
 
-import com.bernarsk.productservice.dao.ProductDAO;
+import com.bernarsk.productservice.dto.ProductDTO;
 import com.bernarsk.productservice.model.Product;
 import com.bernarsk.productservice.service.ProductService;
 import jakarta.validation.Valid;
@@ -26,8 +26,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductDAO productDAO) {
-        Product product = productService.createProduct(productDAO);
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductDTO productDTO) {
+        Product product = productService.createProduct(productDTO);
         return ResponseEntity.ok(product);
     }
 

@@ -1,7 +1,7 @@
 package com.bernarsk.orderservice.service;
 
-import com.bernarsk.orderservice.dao.OrderDAO;
-import com.bernarsk.orderservice.dao.OrderDetailsDAO;
+import com.bernarsk.orderservice.dto.OrderDTO;
+import com.bernarsk.orderservice.dto.OrderDetailsDTO;
 import com.bernarsk.orderservice.model.Order;
 import com.bernarsk.orderservice.model.OrderDetails;
 import com.bernarsk.orderservice.repository.OrderRepository;
@@ -22,11 +22,11 @@ public class OrderService {
     private final ModelMapper modelMapper;
     private final WebClient.Builder webClientBuilder;
 
-    public Boolean createOrder(OrderDAO orderDAO) {
+    public Boolean createOrder(OrderDTO orderDTO) {
         // collect all product IDs
-        List<Integer> productIDs = orderDAO.getOrderDetailsList()
+        List<Integer> productIDs = orderDTO.getOrderDetailsList()
                 .stream()
-                .map(OrderDetailsDAO::getProductId)
+                .map(OrderDetailsDTO::getProductId)
                 .toList();
         // check if product is in stock
         Boolean result = webClientBuilder.build().get()
@@ -36,11 +36,11 @@ public class OrderService {
                 .bodyToMono(Boolean.class)
                 .block();
         if (result) {
-            Order orderEntity = modelMapper.map(orderDAO, Order.class);
+            Order orderEntity = modelMapper.map(orderDTO, Order.class);
 
             List<OrderDetails> orderDetailsEntities = new ArrayList<>();
-            for (OrderDetailsDAO orderDetailsDAO : orderDAO.getOrderDetailsList()) {
-                OrderDetails orderDetailsEntity = modelMapper.map(orderDetailsDAO, OrderDetails.class);
+            for (OrderDetailsDTO orderDetailsDTO : orderDTO.getOrderDetailsList()) {
+                OrderDetails orderDetailsEntity = modelMapper.map(orderDetailsDTO, OrderDetails.class);
                 orderDetailsEntity.setOrder(orderEntity);
                 orderDetailsEntities.add(orderDetailsEntity);
             }
