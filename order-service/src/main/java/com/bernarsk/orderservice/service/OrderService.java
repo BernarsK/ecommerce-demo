@@ -52,4 +52,8 @@ public class OrderService {
             return false;
         }
     }
+
+    public Boolean checkCustomerExists(Long id) {
+        return null;
+    }
 }
