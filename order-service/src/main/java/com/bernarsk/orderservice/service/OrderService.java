@@ -2,17 +2,20 @@ package com.bernarsk.orderservice.service;
 
 import com.bernarsk.orderservice.dto.OrderDTO;
 import com.bernarsk.orderservice.dto.OrderDetailsDTO;
+import com.bernarsk.orderservice.event.OrderPlacedEvent;
 import com.bernarsk.orderservice.model.Order;
 import com.bernarsk.orderservice.model.OrderDetails;
 import com.bernarsk.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -21,6 +24,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public Boolean createOrder(OrderDTO orderDTO) {
         // collect all product IDs
@@ -46,11 +50,19 @@ public class OrderService {
             }
             orderEntity.setOrderDetailsList(orderDetailsEntities);
             orderRepository.save(orderEntity);
+
+            // kafka
+
+            kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(orderEntity.getOrderId()));
             return true;
         } else {
             log.info("One of the products is not in stock!");
             return false;
         }
+    }
+
+    public Optional<Order> getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
 
     public Boolean checkCustomerExists(Long id) {
