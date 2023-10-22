@@ -1,4 +1,4 @@
-package com.bernarsk.orderservice.dto;
+package com.bernarsk.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -61,8 +61,10 @@ public class OrderService {
         }
     }
 
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public OrderDTO getOrderById(Long id) {
+        Optional<Order> optionalOrder = orderRepository.findById(id);
+        Order order = optionalOrder.orElse(null);
+        return modelMapper.map(order, OrderDTO.class);
     }
 
     public Boolean checkCustomerExists(Long id) {
